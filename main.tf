@@ -25,7 +25,7 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_eip" "ngw" {
   count=length(lookup(lookup(var.subnets,"public",null ),"cidr_block",0))
-#  vpc   = "true"
+ vpc   = "true"
   tags =merge(var.tags,{"Name"="${var.env}-ngw"})
 }
 
@@ -49,14 +49,4 @@ resource "aws_route" "ngw" {
   route_table_id         = local.all_private_subnet_ids[count.index]
   nat_gateway_id         = element(aws_nat_gateway.ngw.*.id, count.index)
   destination_cidr_block = "0.0.0.0/0"
-}
-
-
-
-output "subnets" {
-  value = module.subnets
-}
-
-output "ngw" {
-  value = aws_nat_gateway.ngw
 }
